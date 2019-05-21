@@ -78,30 +78,32 @@ public class Ex1 {
         Scanner lector = new Scanner(System.in);
         System.out.print("¿Cuantas actualizaciones quiere hacer?: ");
         int n = lector.nextInt();
+        lector.nextLine();
 
         try (PreparedStatement pst = con.prepareStatement("update Serves set price=? where bar=? and beer=?")) {
-            //boolean estado_previo = con.getAutoCommit();
+            boolean estado_previo = con.getAutoCommit();
             try {
                 con.setAutoCommit(false);
                 System.out.println("Actualiza los precios de las cervezas:");
                 for (int i = 0; i < n; i++) {
-                    System.out.println("### Actualización " + (i + 1) + "###");
+                    System.out.println("### Actualización " + (i + 1) + "/" + n + " ###");
                     System.out.print("Nombre de la cerveza: ");
-                    pst.setString(3, lector.next());
+                    pst.setString(3, lector.nextLine());
                     System.out.print("Nombre del bar: ");
-                    pst.setString(2, lector.next());
+                    pst.setString(2, lector.nextLine());
                     System.out.print("Nuevo precio: ");
                     pst.setFloat(1, lector.nextFloat());
+                    lector.nextLine();
                     pst.executeUpdate();
                 }
                 con.commit();
                 System.out.println("### Fin actualización ###");
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 System.out.println("Transacción abortada");
                 con.rollback();
             } finally {
-                con.setAutoCommit(true);
-                //con.setAutoCommit(estado_previo);
+                //con.setAutoCommit(true);
+                con.setAutoCommit(estado_previo);
             }
         }
     }
